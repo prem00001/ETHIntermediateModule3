@@ -59,12 +59,16 @@ To deploy the MyERCToken contract:
 Example of transferring tokens between addresses:
 
 ```solidity
-// Assuming token is an instance of MyERCToken contract
-address recipient = 0xRecipientAddress;
-uint256 amount = 100;
-
-bool success = token.transfer(recipient, amount);
-require(success, "Transfer failed");
+function transfer(address _to, uint256 _value) public returns (bool success) 
+    {
+        require(_to != address(0), "Invalid address");
+        require(balanceOf[msg.sender] >= _value, "Insufficient balance");
+        
+        balanceOf[msg.sender] -= _value;
+        balanceOf[_to] += _value;
+        emit Transfer(msg.sender, _to, _value);
+        return true;
+    }
 ```
 
 ### Approving Allowances
@@ -72,12 +76,12 @@ require(success, "Transfer failed");
 Example of approving another address to spend tokens on your behalf:
 
 ```solidity
-// Assuming token is an instance of MyERCToken contract
-address spender = 0xSpenderAddress;
-uint256 allowanceAmount = 500;
-
-bool success = token.approve(spender, allowanceAmount);
-require(success, "Approval failed");
+function approve(address _spender, uint256 _value) public returns (bool success) 
+    {
+        allowance[msg.sender][_spender] = _value;
+        emit Approval(msg.sender, _spender, _value);
+        return true;
+    }
 ```
 
 ### Increasing Allowance
@@ -85,12 +89,13 @@ require(success, "Approval failed");
 Example of increasing the allowance for a spender to spend tokens on your behalf:
 
 ```solidity
-// Assuming token is an instance of MyERCToken contract
-address spender = 0xSpenderAddress;
-uint256 addedAllowance = 200;
 
-bool success = token.increaseAllowance(spender, addedAllowance);
-require(success, "Increase allowance failed");
+function increaseAllowance(address _spender, uint256 _addedValue) public returns (bool success) 
+    {
+        allowance[msg.sender][_spender] += _addedValue;
+        emit Approval(msg.sender, _spender, allowance[msg.sender][_spender]);
+        return true;
+    }
 ```
 
 ## Contributing
