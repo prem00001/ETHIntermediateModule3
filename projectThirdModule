@@ -1,64 +1,30 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.13;
 
-contract MyERCToken 
-{
-    string public name = "PREMERC20";
-    string public symbol = "PRC";
-    uint8 public decimals = 21;
-    uint256 public totalSupply;
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.0.0/contracts/token/ERC20/ERC20.sol";
+
+contract premErc20 is ERC20 {
     address public owner;
 
-    mapping(address => uint256) public balanceOf;
-    mapping(address => mapping(address => uint256)) public allowance;
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
 
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-
-    constructor(uint256 initialSupply) 
-    {
+    constructor(uint256 initialSupply) ERC20("GODO", "GD") {
         owner = msg.sender;
-        totalSupply = initialSupply * (10 ** uint256(decimals));
-        balanceOf[msg.sender] = totalSupply;
-        emit Transfer(address(0), msg.sender, totalSupply);
+        _mint(owner, initialSupply * 10 ** uint256(decimals()));
     }
 
-    function transfer(address _to, uint256 _value) public returns (bool success) 
-    {
-        require(_to != address(0), "Invalid address");
-        require(balanceOf[msg.sender] >= _value, "Insufficient balance");
-        
-        balanceOf[msg.sender] -= _value;
-        balanceOf[_to] += _value;
-        emit Transfer(msg.sender, _to, _value);
-        return true;
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount * 10 ** uint256(decimals()));
     }
 
-    function approve(address _spender, uint256 _value) public returns (bool success) 
-    {
-        allowance[msg.sender][_spender] = _value;
-        emit Approval(msg.sender, _spender, _value);
-        return true;
+    function burn(uint256 amount) public {
+        _burn(msg.sender, amount * 10 ** uint256(decimals()));
     }
 
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) 
-    {
-        require(_to != address(0), "Invalid address");
-        require(balanceOf[_from] >= _value, "Insufficient balance");
-        require(allowance[_from][msg.sender] >= _value, "Allowance exceeded");
-        
-        balanceOf[_from] -= _value;
-        balanceOf[_to] += _value;
-        allowance[_from][msg.sender] -= _value;
-        emit Transfer(_from, _to, _value);
-        return true;
+    function transferAmount(address to, uint256 amount) public returns (bool) {
+        return transfer(to, amount * 10 ** uint256(decimals()));
     }
-
-    function increaseAllowance(address _spender, uint256 _addedValue) public returns (bool success) 
-    {
-        allowance[msg.sender][_spender] += _addedValue;
-        emit Approval(msg.sender, _spender, allowance[msg.sender][_spender]);
-        return true;
-    }
-
 }
