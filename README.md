@@ -25,13 +25,13 @@
 ### Constructor
 
 ```solidity
-constructor(uint256 initialSupply) ERC20("GODO", "GD") {
-    owner = msg.sender;
-    _mint(owner, initialSupply * 10 ** uint256(decimals()));
-}
+constructor() ERC20("GODO", "GD") 
+    {
+        owner = msg.sender;
+        _mint(owner, 100 * 10**decimals());
+    }
 ```
 
-- Initializes the token with a given `initialSupply`.
 - Sets the `owner` to the address that deploys the contract.
 - Mints the initial supply of tokens to the owner.
 
@@ -40,20 +40,31 @@ constructor(uint256 initialSupply) ERC20("GODO", "GD") {
 #### mint
 
 ```solidity
-function mint(address to, uint256 amount) public onlyOwner {
-    _mint(to, amount * 10 ** uint256(decimals()));
-}
+function mintTokens(address add, uint value) public onlyOwner
+    {
+        _mint(add, value);
+    }
 ```
 
 - Mints new tokens and assigns them to the specified `to` address.
 - Only the contract owner can call this function.
 
+### decimals
+
+```solidity
+function decimals() public pure override returns (uint8) 
+    {
+        return 10;
+    }
+```
+
 #### burn
 
 ```solidity
-function burn(uint256 amount) public {
-    _burn(msg.sender, amount * 10 ** uint256(decimals()));
-}
+function burn(uint amount) public 
+    {
+        _burn(msg.sender , amount);
+    }
 ```
 
 - Burns a specified `amount` of tokens from the caller's balance.
@@ -62,9 +73,10 @@ function burn(uint256 amount) public {
 #### transferAmount
 
 ```solidity
-function transferAmount(address to, uint256 amount) public returns (bool) {
-    return transfer(to, amount * 10 ** uint256(decimals()));
-}
+function transferTokens(address to, uint amount) public 
+    {
+        transfer(to, amount);
+    }
 ```
 
 - Transfers a specified `amount` of tokens to the `to` address.
