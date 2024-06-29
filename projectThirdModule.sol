@@ -1,30 +1,40 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.0;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.0.0/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 
-contract premErc20 is ERC20 {
+contract PremERC20 is ERC20 {
+    // Constructor used to initialize  token with a name and symbol
     address public owner;
-
-    modifier onlyOwner() {
+    modifier onlyOwner() 
+    {
         require(msg.sender == owner, "Only owner can call this function");
         _;
     }
-
-    constructor(uint256 initialSupply) ERC20("GODO", "GD") {
+    constructor() ERC20("GODO", "GD") 
+    {
         owner = msg.sender;
-        _mint(owner, initialSupply * 10 ** uint256(decimals()));
+        _mint(owner, 100 * 10**decimals());
     }
-
-    function mint(address to, uint256 amount) public onlyOwner {
-        _mint(to, amount * 10 ** uint256(decimals()));
+    
+    // decimals function to set the number of decimal places to 10
+    function decimals() public pure override returns (uint8) 
+    {
+        return 10;
     }
-
-    function burn(uint256 amount) public {
-        _burn(msg.sender, amount * 10 ** uint256(decimals()));
+     // Function to mint new tokens and assign them to a specific address
+    function mintTokens(address add, uint value) public onlyOwner
+    {
+        _mint(add, value);
     }
-
-    function transferAmount(address to, uint256 amount) public returns (bool) {
-        return transfer(to, amount * 10 ** uint256(decimals()));
+    // Function to burn (destroy) tokens from a specific address
+    function burn(uint amount) public 
+    {
+        _burn(msg.sender , amount);
+    }
+    // function used add tranfer token to specific addresss
+    function transferTokens(address to, uint amount) public 
+    {
+        transfer(to, amount);
     }
 }
